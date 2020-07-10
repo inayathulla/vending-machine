@@ -11,6 +11,8 @@ import java.util.*;
 @Component
 public class ApplicationStartUpRunner implements CommandLineRunner {
 
+    boolean timeUp = false;
+
     @Autowired
     private ProductService service;
 
@@ -26,11 +28,11 @@ public class ApplicationStartUpRunner implements CommandLineRunner {
         int priceOfSelectedProduct = 0;
         //needed to maintain count of all coins
         int totalCoins = 0;
-        boolean timeUp = false;
 
         //Timer is needed so if user is idle for stipulated time, then break loop so other user can
         //take his turn
-        Timer timer = new Timer();
+        Timer timer1 = new Timer();
+        Timer timer2 = new Timer();
         TimerTask task = new TimerTask() {
             @Override
             public void run() {
@@ -45,7 +47,7 @@ public class ApplicationStartUpRunner implements CommandLineRunner {
                     System.out.println(product.getPid()+" " +product.getPname()+" "+product.getPamount()));
 
             Scanner scan = new Scanner(System.in);
-            timer.schedule(task, 10*1000);
+            timer1.schedule(task, 20*1000);
 
             if(timeUp){
                 //If user has not entered selected option within time then
@@ -56,10 +58,9 @@ public class ApplicationStartUpRunner implements CommandLineRunner {
             try{
                 int num = scan.nextInt();
                 //User has choosen within 10 seconds
-                timer.cancel();
+                timer1.cancel();
                 if(!itemPriceMap.containsKey(num)){
                     //custom exception can be raised later on
-                    timer.cancel();
                     throw new Exception("Invalid no. selected");
                 }else{
                     priceOfSelectedProduct = itemPriceMap.get(num);
@@ -67,10 +68,11 @@ public class ApplicationStartUpRunner implements CommandLineRunner {
             }catch(Exception ex){
                 //This will trigger if user enters anything other than no, if possible
                 System.out.println("Invalid input try again");
+                continue;
             }
             System.out.println("$ Insert coin(s) $");
             Scanner scan2 = new Scanner(System.in);
-            timer.schedule(task, 10*1000);
+            timer2.schedule(task, 20*1000);
             if(timeUp){
                 //If user has not entered coin within time then
                 timeUp = false;
@@ -81,7 +83,7 @@ public class ApplicationStartUpRunner implements CommandLineRunner {
                  * penny = 1 cent, nickel = 5 cents, dime = 10 cents, quarter = 25 cents
                 **/
                 int coin = scan.nextInt();
-                timer.cancel();
+                timer2.cancel();
                 if(coin == priceOfSelectedProduct){
                     //Dispensing product
                     System.out.println(".... Enjoy your treat ....");
@@ -93,26 +95,28 @@ public class ApplicationStartUpRunner implements CommandLineRunner {
                 }else{
                     //If coins entered is less than priceOfSelectedProduct
                     totalCoins += coin;
+
                     while(totalCoins < priceOfSelectedProduct){
+                        Timer timer3=new Timer();
                         System.out.println("$ Insert few more coin(s) $");
                         Scanner scan3 = new Scanner(System.in);
+                        timer3.schedule(task, 20*1000);
 
-                        timer.schedule(task, 10*1000);
                         if(timeUp){
                             //If user has not entered coin within time then
                             timeUp = false;
+                            //Insufficient coins and delayed time
                             System.out.println("*** Dispence all coins entered  ***");
                             continue;
                         }
 
                         int oneMoreCoin = scan3.nextInt();
+                        timer3.cancel();
                         totalCoins += oneMoreCoin;
                     }
                 }
             }catch(Exception ex){
-                //This will trigger if user enters anything other than no, if possible
-                System.out.println("Insufficient coins");
-                System.out.println(".... Dispensing coins ....");
+                continue;
             }
 
         }
