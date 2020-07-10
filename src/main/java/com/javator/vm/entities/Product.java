@@ -1,7 +1,10 @@
 package com.javator.vm.entities;
 
+import lombok.Data;
+
 import javax.persistence.*;
 
+@Data
 @Entity
 @Table(name="Product")
 public class Product {
@@ -15,5 +18,11 @@ public class Product {
     private String pname;
 
     @Column(name = "pamount")
-    private String pamount;
+    private Integer pamount;
+
+    @Override
+    public String toString() {
+        return
+                pid + " " + pname +  " " + pamount;
+    }
 }
