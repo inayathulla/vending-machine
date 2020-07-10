@@ -29,25 +29,33 @@ public class ApplicationStartUpRunner implements CommandLineRunner {
         //needed to maintain count of all coins
         int totalCoins = 0;
 
-        //Timer is needed so if user is idle for stipulated time, then break loop so other user can
-        //take his turn
-        Timer timer1 = new Timer();
-        Timer timer2 = new Timer();
-        TimerTask task = new TimerTask() {
-            @Override
-            public void run() {
-                System.out.println("Times up!!");
-                timeUp = true;
-            }
-        };
-
         while(true){
+            //Timer is needed so if user is idle for stipulated time, then break loop so other user can
+            //take his turn
+            Timer timer1 = new Timer();
+            Timer timer2 = new Timer();
+            TimerTask task1= new TimerTask() {
+                @Override
+                public void run() {
+                    System.out.println("Times up!!");
+                    timeUp = true;
+                }
+            };
+            TimerTask task2= new TimerTask() {
+                @Override
+                public void run() {
+                    System.out.println("Times up!!");
+                    timeUp = true;
+                }
+            };
+
+
             System.out.println("Choose a product, enter no. against product  ");
             products.forEach(product ->
                     System.out.println(product.getPid()+" " +product.getPname()+" "+product.getPamount()));
 
             Scanner scan = new Scanner(System.in);
-            timer1.schedule(task, 20*1000);
+            timer1.schedule(task1, 20*1000);
 
             if(timeUp){
                 //If user has not entered selected option within time then
@@ -57,7 +65,7 @@ public class ApplicationStartUpRunner implements CommandLineRunner {
             //If user enters other than number
             try{
                 int num = scan.nextInt();
-                //User has choosen within 10 seconds
+                //User has choosen within 20 seconds
                 timer1.cancel();
                 if(!itemPriceMap.containsKey(num)){
                     //custom exception can be raised later on
@@ -72,7 +80,7 @@ public class ApplicationStartUpRunner implements CommandLineRunner {
             }
             System.out.println("$ Insert coin(s) $");
             Scanner scan2 = new Scanner(System.in);
-            timer2.schedule(task, 20*1000);
+            timer2.schedule(task2, 20*1000);
             if(timeUp){
                 //If user has not entered coin within time then
                 timeUp = false;
@@ -98,9 +106,17 @@ public class ApplicationStartUpRunner implements CommandLineRunner {
 
                     while(totalCoins < priceOfSelectedProduct){
                         Timer timer3=new Timer();
+                        TimerTask task3= new TimerTask() {
+                            @Override
+                            public void run() {
+                                System.out.println("Times up!!");
+                                timeUp = true;
+                            }
+                        };
+
                         System.out.println("$ Insert few more coin(s) $");
                         Scanner scan3 = new Scanner(System.in);
-                        timer3.schedule(task, 20*1000);
+                        timer3.schedule(task3, 20*1000);
 
                         if(timeUp){
                             //If user has not entered coin within time then
