@@ -130,6 +130,10 @@ public class ApplicationStartUpRunner implements CommandLineRunner {
                         timer3.cancel();
                         totalCoins += oneMoreCoin;
                     }
+                    System.out.println("**Here is your treat**");
+                    if(totalCoins > priceOfSelectedProduct){
+                        System.out.println("**Take back change**");
+                    }
                 }
             }catch(Exception ex){
                 continue;
